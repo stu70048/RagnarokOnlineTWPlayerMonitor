@@ -82,31 +82,30 @@ namespace RagnarokMonitor_metro
         private void handleServerInfo(TcpPacket packet)
         {
             int infoSetsNumber = 0,
-                infoOffset = 32;
+                infoOffset = 164;
 
             // Calculating how many server information sets do we received from server.
-            infoSetsNumber = ragnarokPacket.getServerInfoSetsNumber(packet.PayloadData.Length);
+            infoSetsNumber = ragnarokPacket.getServerInfoSetsNumber(packet.PayloadData.Length, infoOffset);
 
-            byte[] payloadData = packet.PayloadData;         
+            byte[] payloadData = packet.PayloadData;
 
             try
             {
-                for (int i = 0, dataOffset = 0; i < infoSetsNumber; i++)
+                for (int i = 0; i < infoSetsNumber; i++)
                 {
                     int port, playerCount;
                     byte[] byteServerName = new byte[20];
                     string IP, strServerName;
-                    IP = payloadData[0 + i * infoOffset + dataOffset].ToString() + "." + payloadData[1 + i * infoOffset + dataOffset].ToString() + "." +
-                         payloadData[2 + i * infoOffset + dataOffset].ToString() + "." + payloadData[3 + i * infoOffset + dataOffset].ToString();
-                    port = (payloadData[5 + i * infoOffset + dataOffset] << 8) + payloadData[4 + i * infoOffset + dataOffset];
-                    playerCount = (payloadData[27 + i * infoOffset + dataOffset] << 8) + payloadData[26 + i * infoOffset + dataOffset];
+                    IP = payloadData[0 + i * infoOffset].ToString() + "." + payloadData[1 + i * infoOffset].ToString() + "." +
+                         payloadData[2 + i * infoOffset].ToString() + "." + payloadData[3 + i * infoOffset].ToString();
+                    port = (payloadData[5 + i * infoOffset] << 8) + payloadData[4 + i * infoOffset];
+                    playerCount = (payloadData[27 + i * infoOffset] << 8) + payloadData[26 + i * infoOffset];
 
-                    Array.Copy(payloadData, 6 + i * infoOffset + dataOffset, byteServerName, 0, 20);
+                    Array.Copy(payloadData, 6 + i * infoOffset, byteServerName, 0, 20);
                     strServerName = System.Text.Encoding.GetEncoding("big5").GetString(byteServerName, 0, 20).Replace("\0", string.Empty);
 
                     mainform.Invoke(mainform.updateDataGridView_Var, strServerName, IP, port.ToString(), playerCount.ToString());
 
-                    dataOffset += 4;
                     /* free byteServerName.*/
                     byteServerName = null;
                 }

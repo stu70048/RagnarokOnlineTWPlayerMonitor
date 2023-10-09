@@ -17,15 +17,15 @@ namespace RagnarokMonitor_metro
     {
         public static bool verifyServerInfo(byte[] data, int nRecv)
         {
-            if (data[0] == 0xdb && data[1] == 0x54)
+            if (data[0] == 0xc0 && data[1] == 0xa8)
                 return true;
             else
                 return false;
         }
 
-        public static int getServerInfoSetsNumber(int nRecv)
+        public static int getServerInfoSetsNumber(int nRecv,int infoOffset)
         {          
-            return nRecv / 32;
+            return nRecv / infoOffset;
         }
     }
 }
